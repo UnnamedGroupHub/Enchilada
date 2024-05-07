@@ -24,7 +24,7 @@ import registerCommands from "./registerCommands.js";
 
     client.user.setActivity({
       type: ActivityType.Listening,
-      name: "for slash commands",
+      name: "/help",
     });
 
     setInterval(async () => {
