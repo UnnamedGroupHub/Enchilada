@@ -35,17 +35,16 @@ export default {
 async function createUserTemporaryVoiceChannel(interaction) {
   const guild = interaction.member.guild;
 
-  const tempVoiceChannelCategory = guild.channels.cache.find(
-    (channel) =>
-      channel.type === ChannelType.GuildCategory &&
-      channel.name === "Temporary Voice Channels"
-  );
-
-  if (!tempVoiceChannelCategory)
-    await guild.channels.create({
+  const tempVoiceChannelCategory =
+    guild.channels.cache.find(
+      (channel) =>
+        channel.type === ChannelType.GuildCategory &&
+        channel.name === "Temporary Voice Channels"
+    ) ||
+    (await guild.channels.create({
       name: "Temporary Voice Channels",
       type: ChannelType.GuildCategory,
-    });
+    }));
 
   const existingChannel = guild.channels.cache.find(
     (channel) =>
