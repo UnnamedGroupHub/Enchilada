@@ -72,7 +72,7 @@ async function createUserTemporaryVoiceChannel(interaction) {
     });
 
     return await interaction.reply(
-      `Created temporary voice channel ${newChannel.toString()}. You can delete it with \`/vc delete\`. The channel will be deleted after 5 minutes of being empty.`
+      `Created temporary voice channel ${newChannel.toString()}. You can delete it with \`/vc delete\`. Don't worry if it disappears, you can always create a new one.`
     );
   }
 }

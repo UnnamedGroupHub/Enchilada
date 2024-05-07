@@ -5,6 +5,7 @@ import {
   Events,
   Partials,
   ActivityType,
+  ChannelType,
 } from "discord.js";
 import registerCommands from "./registerCommands.js";
 
@@ -33,6 +34,35 @@ import registerCommands from "./registerCommands.js";
         if (guild.id !== process.env.DISCORD_GUILD_ID) {
           await guild.leave();
           console.log(`Left guild ${guild.name}.`);
+        }
+      }
+
+      // delete all temporary voice channels older than 5 minutes
+      const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID);
+      const tempVoiceChannelCategory = guild.channels.cache.find(
+        (channel) =>
+          channel.type === ChannelType.GuildCategory &&
+          channel.name === "Temporary Voice Channels"
+      );
+
+      if (tempVoiceChannelCategory.children.cache.size > 0) {
+        for (const channel of tempVoiceChannelCategory.children.cache.values()) {
+          if (
+            channel.createdAt.getTime() + 5 * 60 * 1000 < Date.now() &&
+            channel.members.size === 0
+          ) {
+            await channel.delete();
+            console.log(
+              `Deleted channel ${channel.name} as it was empty for 5 minutes.`
+            );
+          } else {
+            console.log(
+              `Channel ${channel.name} seconds until deletion: ${
+                (channel.createdAt.getTime() + 5 * 60 * 1000 - Date.now()) /
+                1000
+              }`
+            );
+          }
         }
       }
     }, 1000);
