@@ -45,7 +45,7 @@ import registerCommands from "./registerCommands.js";
           channel.name === "Temporary Voice Channels"
       );
 
-      if (tempVoiceChannelCategory.children.cache.size > 0) {
+      if (tempVoiceChannelCategory?.children.cache.size > 0) {
         for (const channel of tempVoiceChannelCategory.children.cache.values()) {
           if (
             channel.createdAt.getTime() + 5 * 60 * 1000 < Date.now() &&
