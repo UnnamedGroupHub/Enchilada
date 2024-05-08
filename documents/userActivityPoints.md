@@ -1,4 +1,4 @@
-# User Acitivity Points
+# User Activity Points
 
 ## Abstract
 
