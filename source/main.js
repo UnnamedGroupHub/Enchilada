@@ -8,8 +8,21 @@ import {
   ChannelType,
 } from "discord.js";
 import registerCommands from "./registerCommands.js";
+import { upsert } from "#controllers/mongodb.js";
 
 (async () => {
+  const missingEnvVars = [
+    "ENVIRONMENT",
+    "DISCORD_BOT_TOKEN",
+    "DISCORD_GUILD_ID",
+    "MONGODB_URL",
+  ].filter((envVar) => !process.env[envVar]);
+
+  if (missingEnvVars.length)
+    throw new Error(
+      `Missing environment variables: ${missingEnvVars.join(", ")}`
+    );
+
   const client = new Client({
     intents: Object.values(GatewayIntentBits),
     partials: Object.values(Partials),
@@ -68,6 +81,28 @@ import registerCommands from "./registerCommands.js";
     }, 1000);
   });
 
+  client.on(Events.MessageCreate, async (message) => {
+    if (message.partial) message = await message.fetch();
+
+    if (message.author.bot) return;
+
+    if (message?.guild?.id === process.env.DISCORD_GUILD_ID) {
+      // Member sends a message to a guild channel
+      await updateUserActivityPoints(message.author.id, 1);
+    }
+  });
+
+  client.on(Events.MessageDelete, async (message) => {
+    if (message.partial) message = await message.fetch();
+
+    if (message.author.bot) return;
+
+    if (message?.guild?.id === process.env.DISCORD_GUILD_ID) {
+      // Member's message is deleted from a guild channel
+      await updateUserActivityPoints(message.author.id, -1);
+    }
+  });
+
   client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isCommand()) return;
 
@@ -89,3 +124,13 @@ import registerCommands from "./registerCommands.js";
 
   await registerCommands(client);
 })();
+
+async function updateUserActivityPoints(userId, increment) {
+  const userActivityPoints = await upsert(
+    "userActivityPoints",
+    { id: userId },
+    { $inc: { points: increment } }
+  );
+
+  return userActivityPoints.points;
+}
