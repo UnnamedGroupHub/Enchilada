@@ -6,6 +6,7 @@ import {
   Partials,
   ActivityType,
   ChannelType,
+  AuditLogEvent,
 } from "discord.js";
 import registerCommands from "./registerCommands.js";
 import { upsert } from "#controllers/mongodb.js";
@@ -86,21 +87,90 @@ import { upsert } from "#controllers/mongodb.js";
 
     if (message.author.bot) return;
 
-    if (message?.guild?.id === process.env.DISCORD_GUILD_ID) {
-      // Member sends a message to a guild channel
-      await updateUserActivityPoints(message.author.id, 1);
-    }
+    // Member sends a message to a guild channel
+    if (message?.guild?.id === process.env.DISCORD_GUILD_ID)
+      await updateUserActivityPoints(message.author, 1, "sending a message");
   });
 
   client.on(Events.MessageDelete, async (message) => {
-    if (message.partial) message = await message.fetch();
+    // Partials are not possible for this event yet
+    if (message.partial) return;
 
     if (message.author.bot) return;
 
-    if (message?.guild?.id === process.env.DISCORD_GUILD_ID) {
-      // Member's message is deleted from a guild channel
-      await updateUserActivityPoints(message.author.id, -1);
-    }
+    // Member's message is deleted from a guild channel
+    if (message?.guild?.id === process.env.DISCORD_GUILD_ID)
+      await updateUserActivityPoints(
+        message.author,
+        -1,
+        "deleting their own message"
+      );
+  });
+
+  client.on(Events.MessageReactionAdd, async (reaction, user) => {
+    if (reaction.partial) reaction = await reaction.fetch();
+    if (user.partial) user = await user.fetch();
+
+    if (user.bot) return;
+
+    // Member sends any reaction(s) to a message from another member in a guild channel
+    if (
+      reaction.message.guild?.id === process.env.DISCORD_GUILD_ID &&
+      reaction.message.author.id !== user.id &&
+      reaction.message.reactions.cache.filter((r) => r.users.cache.has(user.id))
+        .size === 1
+    )
+      await updateUserActivityPoints(
+        user,
+        0.1,
+        "reacting to a message for the first time"
+      );
+
+    // Member's message receives any reaction(s) from another member
+    if (
+      reaction.message.guild?.id === process.env.DISCORD_GUILD_ID &&
+      reaction.message.author.id !== user.id &&
+      reaction.message.reactions.cache.filter((r) => r.users.cache.has(user.id))
+        .size === 1
+    )
+      await updateUserActivityPoints(
+        reaction.message.author,
+        0.5,
+        "having another member react to their message"
+      );
+  });
+
+  client.on(Events.MessageReactionRemove, async (reaction, user) => {
+    if (reaction.partial) reaction = await reaction.fetch();
+    if (user.partial) user = await user.fetch();
+
+    if (user.bot) return;
+
+    // Member removes all of their own reactions from another member's message in a guild channel
+    if (
+      reaction.message.guild?.id === process.env.DISCORD_GUILD_ID &&
+      reaction.message.author.id !== user.id &&
+      reaction.message.reactions.cache.filter((r) => r.users.cache.has(user.id))
+        .size === 0
+    )
+      await updateUserActivityPoints(
+        user,
+        -0.1,
+        "removing their last reaction from another member's message"
+      );
+
+    // Member's message loses all of its reactions from another member
+    if (
+      reaction.message.guild?.id === process.env.DISCORD_GUILD_ID &&
+      reaction.message.author.id !== user.id &&
+      reaction.message.reactions.cache.filter((r) => r.users.cache.has(user.id))
+        .size === 0
+    )
+      await updateUserActivityPoints(
+        reaction.message.author,
+        -0.5,
+        "losing the last reaction from another member on their message"
+      );
   });
 
   client.on(Events.InteractionCreate, async (interaction) => {
@@ -125,11 +195,19 @@ import { upsert } from "#controllers/mongodb.js";
   await registerCommands(client);
 })();
 
-async function updateUserActivityPoints(userId, increment) {
+async function updateUserActivityPoints(user, increment, reason) {
+  const userId = user.id;
+
   const userActivityPoints = await upsert(
     "userActivityPoints",
     { id: userId },
     { $inc: { points: increment } }
+  );
+
+  console.log(
+    `User ${user.tag} has ${increment > 0 ? "gained" : "lost"} ${Math.abs(
+      increment
+    )} activity points for ${reason}!`
   );
 
   return userActivityPoints.points;

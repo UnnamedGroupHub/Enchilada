@@ -6,7 +6,8 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node source/main.js"
+    "start": "node source/main.js",
+    "dev": "node --watch source/main.js"
   },
   "imports": {
     "#controllers/*": "./source/controllers/*"
