@@ -15,6 +15,7 @@ export default {
     message += "\n";
     message += "- `/ping` - Replies with pong!\n";
     message += "- `/vc` - Create, move, or delete voice channels with ease!\n";
+    message += "- `/xp` - Check your XP.\n";
     message += "- `/help` - You're looking at it!\n";
     message += "\n";
     message +=
