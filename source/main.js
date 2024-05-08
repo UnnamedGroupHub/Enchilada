@@ -135,7 +135,7 @@ import { upsert } from "#controllers/mongodb.js";
     )
       await updateUserActivityPoints(
         reaction.message.author,
-        0.5,
+        0.25,
         "having another member react to their message"
       );
   });
@@ -168,7 +168,7 @@ import { upsert } from "#controllers/mongodb.js";
     )
       await updateUserActivityPoints(
         reaction.message.author,
-        -0.5,
+        -0.25,
         "losing the last reaction from another member on their message"
       );
   });
