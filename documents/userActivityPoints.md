@@ -14,3 +14,4 @@ This document describes the user activity points system. The user activity point
 | DONE   | Member removes all of their own reactions from another member's message in a guild channel | -0.1   | Yes       |
 | DONE   | Member's message receives any reaction(s) from another member                              | +0.25  | Yes       |
 | DONE   | Member's message loses all of its reactions from another member                            | -0.25  | Yes       |
+| TBD    | Member has spent 15 minutes in a voice channel                                             | +1     | No        |
