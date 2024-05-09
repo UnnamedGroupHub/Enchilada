@@ -93,10 +93,20 @@ import { upsert } from "#controllers/mongodb.js";
 
     console.log(message.content);
 
-    if (message.content.includes("puppycat"))
-      await message.reply(
-        "https://media1.tenor.com/m/g2L2evYwj54AAAAd/puppycat-bee-and-puppycat.gif"
-      );
+    if (message.content.includes("puppycat")) {
+      const puppycatList = [
+        "https://media1.tenor.com/m/g2L2evYwj54AAAAd/puppycat-bee-and-puppycat.gif",
+        "https://media1.tenor.com/m/4OAIaqt-S0QAAAAC/puppycat.gif",
+        "https://media1.tenor.com/m/Xp7xcKU1yGsAAAAC/puppycat-bee-and-puppycat.gif",
+        "https://media1.tenor.com/m/-lVXEdAMGT8AAAAC/puppycat.gif",
+        "https://media1.tenor.com/m/rtktSjWMpy4AAAAC/bee-puppy-cat.gif",
+      ];
+
+      const puppycat =
+        puppycatList[Math.floor(Math.random() * puppycatList.length)];
+
+      await message.reply(puppycat);
+    }
   });
 
   client.on(Events.MessageDelete, async (message) => {
