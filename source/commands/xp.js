@@ -12,7 +12,7 @@ export default {
       id: user.id,
     });
 
-    const xp = userActivityPointsDoc
+    const xp = userActivityPointsDoc[0]
       ? userActivityPointsDoc[0].points.toFixed(0)
       : 0;
 
