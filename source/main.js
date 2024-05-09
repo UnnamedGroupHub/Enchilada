@@ -90,6 +90,15 @@ import { upsert } from "#controllers/mongodb.js";
     // Member sends a message to a guild channel
     if (message?.guild?.id === process.env.DISCORD_GUILD_ID)
       await updateUserActivityPoints(message.author, 1, "sending a message");
+
+    console.log(message.content);
+
+    // birthday response
+    if (message.author.id === "324031309447954433")
+      if (message.content.includes("jigglepuppycat"))
+        await message.reply(
+          "https://tenor.com/en-GB/view/puppycat-bee-and-puppycat-puppycat-dance-dance-dancing-gif-26673532"
+        );
   });
 
   client.on(Events.MessageDelete, async (message) => {
