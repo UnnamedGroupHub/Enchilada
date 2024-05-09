@@ -93,12 +93,10 @@ import { upsert } from "#controllers/mongodb.js";
 
     console.log(message.content);
 
-    // birthday response
-    if (message.author.id === "324031309447954433")
-      if (message.content.includes("jigglepuppycat"))
-        await message.reply(
-          "https://media1.tenor.com/m/g2L2evYwj54AAAAd/puppycat-bee-and-puppycat.gif"
-        );
+    if (message.content.includes("puppycat"))
+      await message.reply(
+        "https://media1.tenor.com/m/g2L2evYwj54AAAAd/puppycat-bee-and-puppycat.gif"
+      );
   });
 
   client.on(Events.MessageDelete, async (message) => {
