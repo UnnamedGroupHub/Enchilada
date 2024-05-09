@@ -91,8 +91,6 @@ import { upsert } from "#controllers/mongodb.js";
     if (message?.guild?.id === process.env.DISCORD_GUILD_ID)
       await updateUserActivityPoints(message.author, 1, "sending a message");
 
-    console.log(message.content);
-
     if (message.content.includes("puppycat")) {
       const puppycatList = [
         "https://media1.tenor.com/m/g2L2evYwj54AAAAd/puppycat-bee-and-puppycat.gif",
