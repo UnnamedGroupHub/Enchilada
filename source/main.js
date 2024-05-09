@@ -97,7 +97,7 @@ import { upsert } from "#controllers/mongodb.js";
     if (message.author.id === "324031309447954433")
       if (message.content.includes("jigglepuppycat"))
         await message.reply(
-          "https://tenor.com/en-GB/view/puppycat-bee-and-puppycat-puppycat-dance-dance-dancing-gif-26673532"
+          "https://media1.tenor.com/m/g2L2evYwj54AAAAd/puppycat-bee-and-puppycat.gif"
         );
   });
 
